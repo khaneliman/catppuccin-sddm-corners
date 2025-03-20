@@ -14,7 +14,7 @@ Column {
         model: userModel
         delegate: ItemDelegate {
             id: userEntry
-                
+
             height: inputHeight
             width: parent.width
             highlighted: userList.currentIndex == index

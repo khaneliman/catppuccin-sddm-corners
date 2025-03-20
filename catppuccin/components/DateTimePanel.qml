@@ -3,7 +3,7 @@ import QtQuick.Controls 2.12
 
 Column {
     spacing: 0
-    
+
     Text {
         id: dateLabel
 
@@ -15,7 +15,7 @@ Column {
         font.pointSize: config.DateSize
         font.bold: config.DateIsBold == "true" ? true : false
         color: config.DateColor
-                
+
         function updateDate() {
             text = new Date().toLocaleDateString(Qt.locale(), config.DateFormat)
         }

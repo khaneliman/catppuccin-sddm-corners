@@ -8,10 +8,10 @@ Item {
 
     height: Screen.height
     width: Screen.width
-    
+
     Image {
         id: background
-        
+
         anchors.fill: parent
         height: parent.height
         width: parent.width
@@ -39,12 +39,12 @@ Item {
         DateTimePanel {
             id: dateTimePanel
 
-            anchors.fill: parent 
+            anchors.fill: parent
         }
-        
+
         LoginPanel {
             id: loginPanel
-            
+
             anchors.fill: parent
         }
     }
