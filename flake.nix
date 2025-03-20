@@ -1,13 +1,7 @@
 {
   description = "A soothing pastel theme for SDDM";
 
-  # Nixpkgs / NixOS version to use.
-  inputs.nixpkgs.url = "nixpkgs/nixos-unstable";
-
-  inputs.flake-compat = {
-    url = "github:edolstra/flake-compat";
-    flake = false;
-  };
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
   outputs =
     { self, nixpkgs, ... }:
@@ -15,63 +9,48 @@
       # Generate a user-friendly version number.
       version = builtins.substring 0 8 self.lastModifiedDate;
 
-      # System types to support.
-      supportedSystems = [
-        "x86_64-linux"
-        "aarch64-linux"
-      ];
+      forAllSystems =
+        function:
+        nixpkgs.lib.genAttrs [
+          "x86_64-linux"
+          "aarch64-linux"
+        ] (system: function (import nixpkgs { inherit system; }));
 
-      # Helper function to generate an attrset '{ x86_64-linux = f "x86_64-linux"; ... }'.
-      forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
-
-      # Nixpkgs instantiated for supported system types.
-      nixpkgsFor = forAllSystems (system: import nixpkgs { inherit system; });
+      mkDate =
+        longDate:
+        (nixpkgs.lib.concatStringsSep "-" [
+          (builtins.substring 0 4 longDate)
+          (builtins.substring 4 2 longDate)
+          (builtins.substring 6 2 longDate)
+        ]);
     in
     {
-      # Provide some binary packages for selected system types.
-      packages = forAllSystems (system: {
-        catppuccin-sddm-corners = nixpkgsFor.${system}.stdenvNoCC.mkDerivation {
-          pname = "catppuccin-sddm-corners";
-          inherit version;
+      devShells = forAllSystems (pkgs: {
+        default = pkgs.mkShell {
+          name = "catppuccin-sddm-corners-shell";
 
-          src = nixpkgs.lib.cleanSourceWith {
-            filter = name: type: type != "regular" || !nixpkgs.lib.hasSuffix ".nix" name;
-            src = nixpkgs.lib.cleanSource ./.;
-          };
-
-          dontConfigure = true;
-          dontBuild = true;
-
-          installPhase = ''
-            runHook preInstall
-
-            mkdir -p "$out/share/sddm/themes/"
-            cp -r catppuccin/ "$out/share/sddm/themes/catppuccin-sddm-corners"
-
-            runHook postInstall
-          '';
-
-          meta = {
-            description = "Soothing pastel theme for SDDM";
-            homepage = "https://github.com/khaneliman/catppuccin-sddm-corners";
-            license = nixpkgs.lib.licenses.mit;
-            maintainers = with nixpkgs.lib.maintainers; [ khaneliman ];
-            platforms = nixpkgs.lib.platforms.linux;
-          };
+          buildInputs = [ ];
         };
       });
 
-      # The default package for 'nix build'. This makes sense if the
-      # flake provides only one package or there is a clear "main"
-      # package.
-      defaultPackage = forAllSystems (system: self.packages.${system}.catppuccin-sddm-corners);
+      overlays.default = final: prev: {
+        catppuccin-sddm-corners = final.callPackage ./nix/default.nix {
+          version =
+            version
+            + "+date="
+            + (mkDate (self.lastModifiedDate or "19700101"))
+            + "_"
+            + (self.shortRev or "dirty");
+        };
+      };
 
-      devShell = forAllSystems (
-        system:
+      # Provide some binary packages for selected system types.
+      packages = forAllSystems (
+        pkgs:
         let
-          pkgs = nixpkgsFor.${system};
+          packages = self.overlays.default pkgs pkgs;
         in
-        pkgs.mkShell { buildInputs = with pkgs; [ ]; }
+        packages // { default = packages.catppuccin-sddm-corners; }
       );
     };
 }
