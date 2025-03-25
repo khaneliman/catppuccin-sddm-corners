@@ -1,0 +1,13 @@
+[SddmGreeterTheme]
+Name=catppuccin-sddm-corners
+Description=Catppuccin SDDM theme
+Author=khaneliman
+Website=https://github.com/khaneliman/sddm-catppuccin-corners
+License=GPL-3.0-or-later
+Type=sddm-theme
+Version=1.3
+ConfigFile=theme.conf
+MainScript=Main.qml
+Theme-Id=catppuccin-sddm-corners
+Theme-API=2.0
+QtVersion=5
