@@ -6,7 +6,6 @@
   outputs =
     { self, nixpkgs, ... }:
     let
-      # Generate a user-friendly version number.
       version = builtins.substring 0 8 self.lastModifiedDate;
 
       forAllSystems =
@@ -29,7 +28,7 @@
         default = pkgs.mkShell {
           name = "catppuccin-sddm-corners-shell";
 
-          buildInputs = [ ];
+          buildInputs = [ pkgs.kdePackages.sddm ];
         };
       });
 

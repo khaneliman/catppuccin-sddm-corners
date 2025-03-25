@@ -10,4 +10,4 @@ ConfigFile=theme.conf
 MainScript=Main.qml
 Theme-Id=catppuccin-sddm-corners
 Theme-API=2.0
-QtVersion=5
+QtVersion=6

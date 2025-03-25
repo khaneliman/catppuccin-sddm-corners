@@ -1,10 +1,9 @@
 {
   lib,
   stdenvNoCC,
-  libsForQt5,
   version,
+  qt6,
 }:
-
 stdenvNoCC.mkDerivation {
   pname = "catppuccin-sddm-corners";
   inherit version;
@@ -18,9 +17,10 @@ stdenvNoCC.mkDerivation {
   dontBuild = true;
   dontWrapQtApps = true;
 
-  propagatedUserEnvPkgs = with libsForQt5.qt5; [
-    qtgraphicaleffects
-    qtquickcontrols2
+  propagatedUserEnvPkgs = with qt6; [
+    qt5compat
+    qtwayland
+    qtquick3d
     qtsvg
   ];
 
